@@ -6,9 +6,10 @@
     "privacy": "public",
     "sdkVersion": "30.0.0",
     "platforms": ["ios", "android"],
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
+    "primaryColor": "#ffffff",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -21,7 +22,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.slvtrs.distagram",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.slvtrs.distagram",
+      "permissions": [],
+      "icon": "./assets/images/icon-android.png",
+      "versionCode": 2,
     }
   }
 }

@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  FlatList,
 } from 'react-native';
 
 import Layout from '../constants/Layout';
@@ -50,22 +51,26 @@ export default class HomeScreen extends React.Component {
           doubleTap
           initialPost
         />
-        {Content.home.map((post, i) => {
-          return (
-            <Post 
-              key={i}
-              index={i} 
-              shadesOfGray={Content.home.length*2} 
-              post={post} 
-              size={Layout.window.width}
-              view={'Home'}
-              likes={post.likes}
-              header
-              footer
-              doubleTap
-            />
-          )
-        })}
+        <FlatList
+          data={Content.home}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item, index}) => {
+            return (
+              <Post 
+                key={index}
+                index={index} 
+                shadesOfGray={Content.home.length} 
+                post={item} 
+                size={Layout.window.width}
+                view={'Home'}
+                likes={item.likes}
+                header
+                footer
+                doubleTap
+              />
+            )
+          }}
+        />
       </ScrollView>
     );
   }

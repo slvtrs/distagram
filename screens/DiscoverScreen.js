@@ -19,7 +19,7 @@ export default class DiscoverScreen extends React.Component {
               <Post 
                 key={i}
                 index={i} 
-                shadesOfGray={Content.discover.length*2} 
+                shadesOfGray={Content.discover.length} 
                 post={post} 
                 size={Layout.window.width/3}
                 border

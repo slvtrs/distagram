@@ -29,7 +29,8 @@ export default class Post extends React.Component {
 
   constructor(props) {
     super(props);
-    let color = props.color || Helpers.generateColor(props.index, props.shadesOfGray)
+    let fade = parseInt(props.index) / props.shadesOfGray
+    let color = props.color || Helpers.randomColor(fade)
     this.state = {
       user: props.user || Content.users[ Math.floor(Math.random()*Content.users.length) ],
       post: {
@@ -38,8 +39,10 @@ export default class Post extends React.Component {
         likes: props.likes !== undefined ? props.likes : Math.round(Math.random()*150),
       },
       color: color,
-      color2: props.color2 || Helpers.darkenColor(color, 0.5),
+      // color2: props.color2 || Helpers.randomColor(fade, color),
+      color2: color,
       opacityAnim: new Animated.Value(0),
+      // opacityAnim: 0,
       scaleAnim: new Animated.Value(0),
     }
   }
@@ -82,7 +85,7 @@ export default class Post extends React.Component {
             <Animated.View style={[
               styles.likedAnim, 
               {
-                // opacity: this.state.opacityAnim,
+                opacity: this.state.opacityAnim,
                 transform: [
                   {scale: this.state.scaleAnim},
                 ],
@@ -136,13 +139,26 @@ export default class Post extends React.Component {
 
   likedAnimation(){
     const dur = 500
+    // this.setState({opacityAnim: 1})
     Animated.timing(this.state.scaleAnim, {
       toValue: 1,
       duration: dur,
       easing: Easing.bounce,
     }).start();
+    Animated.timing(this.state.opacityAnim, {
+      toValue: 0.9,
+      duration: dur/2,
+      easing: Easing.bounce,
+    }).start();
     setTimeout(() => {
       Animated.timing(this.state.scaleAnim, {
+        toValue: 0,
+        duration: dur * 0.5,
+        easing: Easing.linear,
+      }).start(() => {
+        // this.setState({opacityAnim: 0})
+      });
+      Animated.timing(this.state.opacityAnim, {
         toValue: 0,
         duration: dur * 0.5,
         easing: Easing.linear,
@@ -156,6 +172,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: 'rgb(126,126,126)',
   },
   border: {
     borderRightWidth: 1,
@@ -174,6 +191,10 @@ const styles = StyleSheet.create({
   },
   likedAnim: {
     position: 'absolute',
+    opacity: 0,
+    transform: [
+      {scale: 0},
+    ],
   },
   icon: {
     textShadowColor: 'rgba(100, 100, 100, 0.5)',

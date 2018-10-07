@@ -63,7 +63,7 @@ export default class ActivityScreen extends React.Component {
               <Post 
                 key={i}
                 index={i} 
-                shadesOfGray={Content.profile.length*2} 
+                shadesOfGray={Content.profile.length} 
                 post={post} 
                 size={Layout.window.width/3}
                 border

@@ -17,10 +17,10 @@ export default class ActivityScreen extends React.Component {
         <FlatList
           data={Content.activity}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({item, i}) => {
+          renderItem={({item, index}) => {
             let user = Content.users[ Math.floor(Math.random()*Content.users.length) ]
             return (
-              <View style={styles.wrapper} key={i}>
+              <View style={styles.wrapper} key={index}>
                 <Avatar user={user} size={40} />
                 <View style={styles.textWrapper}>
                   <Text style={styles.text}>
@@ -28,9 +28,8 @@ export default class ActivityScreen extends React.Component {
                   </Text>
                 </View>
                 <Post 
-                  key={i}
-                  index={i} 
-                  shadesOfGray={Content.activity.length*2} 
+                  index={index} 
+                  shadesOfGray={Content.activity.length} 
                   size={40}
                 />
               </View>
@@ -53,7 +52,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: Layout.basePadding,
-    marginBottom: Layout.basePadding,
   },
   textWrapper: {
     flex: 1,

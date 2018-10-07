@@ -18,7 +18,10 @@ export default {
   noticeBackground: tintColor,
   noticeText: '#fff',
   red: '#ed4956',
-  rose: '#d30e61',
+  rose: '#c72d8e',
+  pink: '#dd535a',
+  orange: '#f99949',
+  green: '#10c969',
   transparent: 'rgba(255,255,255,0)',
   dark: '#111',
 };

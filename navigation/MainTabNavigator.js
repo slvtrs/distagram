@@ -88,4 +88,6 @@ export default createBottomTabNavigator({
   tabBarOptions: {
     showLabel: false
   },
+  // initialRouteName: 'PostStack',
+  initialRouteName: 'HomeStack',
 });

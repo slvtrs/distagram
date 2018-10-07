@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types'
+import { LinearGradient } from 'expo';
 import Colors from '../constants/Colors';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import Layout from '../constants/Layout';
@@ -12,64 +13,59 @@ export default class Avatar extends React.Component {
   }
 
   static defaultProps = {
-    size: 36,
+    size: 34,
   }
 
   render() {
-    let { user, size } = this.props
+    let { user, size, } = this.props
+    let borderSize = size / 10
     return (
-      <View style={[
+      <LinearGradient 
+        colors={user.story ? [Colors.rose, Colors.orange] : ['white','white']}
+        start={[1, 0]}
+        end={[0.25, 0.75]}
+        style={[
         styles.avatarWrapper,
         {
-          width: size, 
-          height: size,
-          borderRadius: size/2,
+          width: (size + borderSize), 
+          height: (size + borderSize),
+          borderRadius: (size + borderSize) / 2,
         }
       ]}>
         <View style={[
           styles.avatarWrapperInner, 
           {
             backgroundColor: user.color,
-            width: (size-2), 
-            height: (size-2),
-            borderRadius: (size-2)/2,
+            width: (size),
+            height: (size),
+            borderRadius: (size)/2,
           }
         ]}>
           <Text style={[
-            styles.text, 
             styles.avatar,
-            {fontSize: (size-16)},
+            {fontSize: (size*0.7)},
           ]}>
             {user.name[0].toUpperCase()}
-            {/*user.avatar*/}
           </Text>
         </View>
-      </View>
+      </LinearGradient>
     );
   }
 }
 
 const styles = StyleSheet.create({
   avatarWrapper: {
-    borderWidth: 2,
-    borderColor: Colors.rose,
     marginRight: Layout.smallPadding + Layout.tinyPadding,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarWrapperInner: {
     borderWidth: 2,
-    borderColor: Colors.transparent,
     borderColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatar: {
     textAlign: 'center',
-    // borderWidth: 1, borderColor: 'black',
-    // marginTop: -5,
-    // marginLeft: -3,
-    marginLeft: 1,
-    marginTop: -1,
   },
 });

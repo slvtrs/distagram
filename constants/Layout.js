@@ -9,6 +9,7 @@ export default {
     height,
   },
   isSmallDevice: width < 375,
+  largePadding: 30,
   basePadding: 15,
   medPadding: 8,
   smallPadding: 4,

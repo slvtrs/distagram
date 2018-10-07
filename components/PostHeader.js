@@ -22,7 +22,7 @@ export default class PostHeader extends React.Component {
     return (
       <View style={styles.wrapper}>
         <View style={[styles.row, styles.textRow]}>
-          <Avatar user={user} />
+          <Avatar user={user} size={30} />
           <Text style={[styles.text, styles.bold]}>
             {user.name}
           </Text>
