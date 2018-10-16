@@ -11,6 +11,11 @@ export default class IconEmitter extends React.Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
     onExpire: PropTypes.func.isRequired,
+    amount: PropTypes.number,
+  }
+
+  static defaultProps = {
+    amount: 10,
   }
 
   componentDidMount(){
@@ -27,8 +32,9 @@ export default class IconEmitter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      count: 2 + Math.round(10 * Math.random())
+      count: 1 + Math.round(props.amount * Math.random())
     }
+    console.log(props.amount)
   }
 
   render() {

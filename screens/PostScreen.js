@@ -28,6 +28,7 @@ export default class PostScreen extends React.Component {
       rewinding: false,
       emitters: [],
       charging: false,
+      healthAnim: new Animated.Value(10),
     }
   }
 
@@ -36,10 +37,12 @@ export default class PostScreen extends React.Component {
     this.spinDur = 1400
     this.bounceDur = 600
     this.rewindDur = this.bounceDur
+    this.healthDur = 3000
     this._spinValue = 0
     this._colorValue = 0
     this.state.spinAnim.addListener(v => this._spinValue = v.value)
     this.state.colorAnim.addListener(v => this._colorValue = v.value)
+    this.state.healthAnim.addListener(v => this._healthValue = v.value)
   }
 
   render() {
@@ -52,6 +55,8 @@ export default class PostScreen extends React.Component {
       colorAnim,
       emitters,
       buzzLeftAnim,
+      unhealthy,
+      healthAnim,
     } = this.state
 
     let spin = spinAnim.interpolate({
@@ -75,6 +80,10 @@ export default class PostScreen extends React.Component {
       inputRange: [0, 1],
       outputRange: [Colors.tabIconDefault, Colors.pink],
     })
+    let healthColor = healthAnim.interpolate({
+      inputRange: [0, 10],
+      outputRange: rewinding ? [Colors.tabIconDefault, Colors.green] : [Colors.tabIconDefault, Colors.pink],
+    })
 
     return (
       <View style={styles.container}>
@@ -86,12 +95,12 @@ export default class PostScreen extends React.Component {
         <View style={styles.animWrapper}>
           <Animated.View style={[
             styles.circleWrapper, 
-            // {paddingLeft: buzzLeftAnim}
+            {paddingLeft: buzzLeftAnim}
           ]}>
             <Animated.View style={[
               styles.circle, 
+              unhealthy ? {borderColor: healthColor} : {borderColor: circleColor},
               {
-                borderColor: circleColor,
                 backgroundColor: fillColor,
                 width: circleSizeAnim, 
                 height: circleSizeAnim,
@@ -103,8 +112,16 @@ export default class PostScreen extends React.Component {
             {transform: [{rotate: spin}]},
           ]}>
             <View style={styles.plus}>
-              <Animated.View style={[styles.vertical, {height: lineLengthAnim}, {backgroundColor: plusColor},]} />
-              <Animated.View style={[styles.horizontal, {width: lineLengthAnim}, {backgroundColor: plusColor},]} />
+              <Animated.View style={[
+                styles.vertical, 
+                {height: lineLengthAnim}, 
+                unhealthy ? {backgroundColor: healthColor} : {backgroundColor: plusColor},
+              ]} />
+              <Animated.View style={[
+                styles.horizontal, 
+                {width: lineLengthAnim}, 
+                unhealthy ? {backgroundColor: healthColor} : {backgroundColor: plusColor},
+              ]} />
             </View>
           </Animated.View>
         </View>
@@ -112,7 +129,7 @@ export default class PostScreen extends React.Component {
         <View style={styles.emitterWrapper}>
           {emitters.map((id, i) => {
             if(id !== 0){
-              return <IconEmitter key={i} id={id} onExpire={this.handleExpireEmitter} />
+              return <IconEmitter key={i} id={id} onExpire={this.handleExpireEmitter} amount={Math.floor(this._healthValue)} />
             }
           })}
         </View>
@@ -131,7 +148,7 @@ export default class PostScreen extends React.Component {
           <View style={styles.textRow}>
             <View><Text style={[styles.text, styles.wrappedText]}>That</Text></View> 
             <Animated.View style={{paddingLeft: buzzLeftAnim, width: 50}}>
-              <Animated.Text style={[styles.text, styles.wrappedText, {color: buzzColor}]}>buzz</Animated.Text>
+              <Animated.Text style={[styles.text, styles.wrappedText, unhealthy ? {color: healthColor} : {color: buzzColor},]}>buzz</Animated.Text>
             </Animated.View> 
             <View><Text style={[styles.text, styles.wrappedText]}>of recognition</Text></View>
           </View>
@@ -199,8 +216,23 @@ export default class PostScreen extends React.Component {
       this.setState({emitting: true}, () => {
         this.emitIcons()
         this.runBuzzAnimation()
+        setTimeout(() => {
+          if(this.state.emitting){
+            this.runUnhealthyAnim()
+          }
+        }, 2000)
       })
     }
+  }
+
+  runUnhealthyAnim = () => {
+    this.setState({unhealthy: true}, () => {
+      Animated.timing(this.state.healthAnim, {
+        toValue: 0,
+        duration: this.healthDur,
+        // easing: Easing.bezier(.69,0,.83,.44),
+      }).start()
+    })
   }
 
   handlePressOut = () => {
@@ -208,7 +240,7 @@ export default class PostScreen extends React.Component {
     // first step, minimun bounce (for a tap)
     // second step, like it is now
     // third step, after squeeze, less momentum, higher tension
-    this.setState({charing: false, emitting: false})
+    this.setState({charing: false, emitting: false, rewinding: true})
 
     // Animated.parallel([
       Animated.timing(this.state.lineLengthAnim, {
@@ -231,7 +263,12 @@ export default class PostScreen extends React.Component {
         duration: this.spinDur,
         easing: Easing.bezier(.69,-0.22,.79,.84),
       }).start()
-    // ]).start(() => {})
+      Animated.timing(this.state.healthAnim, {
+        toValue: 10,
+        duration: this.spinDur,
+      }).start(() => {
+        this.setState({unhealthy: false, rewinding: false})
+      })
   }
 
   emitIcons = () => {
@@ -257,19 +294,22 @@ export default class PostScreen extends React.Component {
       Animated.sequence([
         Animated.timing(this.state.buzzLeftAnim, {
           toValue: 4,
-          duration: 50,
+          duration: 40 + (10 * (10-this._healthValue)),
           delay: 0
         }),
         Animated.timing(this.state.buzzLeftAnim, {
           toValue: -4,
-          duration: 50
+          duration: 50 + (10 * (10-this._healthValue)),
         })
       ]),
       {
-        iterations: 10
+        iterations: 2
       }
     ).start(() => {
       this.state.buzzLeftAnim.setValue(0)
+      if(this.state.emitting && this._healthValue > 0){
+        this.runBuzzAnimation()
+      }
     })
   }
 
